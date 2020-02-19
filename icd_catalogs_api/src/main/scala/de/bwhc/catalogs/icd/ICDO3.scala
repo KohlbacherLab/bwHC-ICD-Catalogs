@@ -51,6 +51,6 @@ case class ICDO3MCoding
 (
   code: ICDO3.MorphologyCode,
   display: String,
-  version: ICDO3.Version = ICDO3.Version2014
+  version: ICDO3.Version = ICDO3.Version.current
 )
 

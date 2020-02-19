@@ -45,6 +45,6 @@ case class ICD10GMCoding
 (
   code: ICD10GM.Code,
   display: String,
-  version: ICD10GM.Version  
+  version: ICD10GM.Version = ICD10GM.Version.current
 )
 
