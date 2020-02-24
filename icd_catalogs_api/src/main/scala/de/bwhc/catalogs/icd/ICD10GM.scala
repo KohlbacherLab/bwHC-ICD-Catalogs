@@ -11,9 +11,9 @@ object ICD10GM
   case class Code(value: String)
 
   sealed trait Version
-    case object Version2020 extends Version { override def toString = "2020" }
-    case object Version2019 extends Version { override def toString = "2019" }
-    //TODO: previous versions as well?
+  case object Version2020 extends Version { override def toString = "2020" }
+  case object Version2019 extends Version { override def toString = "2019" }
+  //TODO: previous versions as well?
 
 
   object Version

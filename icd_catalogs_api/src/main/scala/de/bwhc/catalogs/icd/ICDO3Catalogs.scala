@@ -21,6 +21,9 @@ trait ICDO3Catalogs
     version: ICDO3.Version
   ): Future[Iterable[ICDO3TCoding]]
 
+  def topographyCodings: Future[Iterable[ICDO3TCoding]] =
+    topographyCodings(ICDO3.Version.current)
+
   def topographyMatches(
     version: ICDO3.Version,
     text: String
@@ -38,6 +41,9 @@ trait ICDO3Catalogs
   def morphologyCodings(
     version: ICDO3.Version
   ): Future[Iterable[ICDO3MCoding]]
+
+  def morphologyCodings: Future[Iterable[ICDO3MCoding]] =
+    morphologyCodings(ICDO3.Version.current)
 
   def morphologyMatches(
     version: ICDO3.Version,
