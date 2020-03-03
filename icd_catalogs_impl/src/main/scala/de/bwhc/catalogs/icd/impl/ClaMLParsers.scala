@@ -108,6 +108,7 @@ object ClaMLICD10GMParser extends ClaMLParser[ICD10GM.Code]
          codings += cd
       }
     }
+    in.close
     codings
 
   }
@@ -146,6 +147,7 @@ object ClaMLICDO3TParser extends ClaMLParser[ICDO3.TopographyCode]
          codings += cd
       }
     }
+    in.close
     codings
 
   }
@@ -185,6 +187,7 @@ object ClaMLICDO3MParser extends ClaMLParser[ICDO3.MorphologyCode]
          codings += cd
       }
     }
+    in.close
     codings
 
   }
