@@ -15,7 +15,11 @@ import de.bwhc.catalogs.icd.{
 
 class ICD10GMCatalogsProviderImpl extends ICD10GMCatalogsProvider
 {
-  def getInstance: ICD10GMCatalogs = ICD10GMCatalogsImpl
+
+  def getInstance: ICD10GMCatalogs = {
+    ICD10GMCatalogsImpl
+  }
+
 }
 
 
@@ -25,18 +29,22 @@ object ICD10GMCatalogsImpl extends ICD10GMCatalogs
 
   import scala.concurrent.ExecutionContext.Implicits._
 
-  private lazy val catalogs: Map[ICD10GM.Version,Iterable[ICD10GMCoding]] =
+  private val catalogs: Map[ICD10GM.Version,Iterable[ICD10GMCoding]] =
     ICD10GM.versions
       .map {
         version =>
+          val inStream =
+            this.getClass
+              .getClassLoader
+              .getResourceAsStream("icd10gm" + version + ".xml")
+
           val codings =
-            ClaMLICD10GMParser.parse(
-              this.getClass
-                .getClassLoader
-                .getResourceAsStream("icd10gm" + version + ".xml")
-            )
-            .map(cd => ICD10GMCoding(cd._1,cd._2,version))
-        (version,codings)
+            ClaMLICD10GMParser.parse(inStream)
+              .map(cd => ICD10GMCoding(cd._1,cd._2,version))
+
+          inStream.close
+
+          (version,codings)
       }
       .toMap
 
@@ -44,7 +52,7 @@ object ICD10GMCatalogsImpl extends ICD10GMCatalogs
   def codings(
     version: ICD10GM.Version
   ): Future[Iterable[ICD10GMCoding]] = {
-    Future { catalogs(version) }
+    Future.successful(catalogs(version))
   }  
 
 

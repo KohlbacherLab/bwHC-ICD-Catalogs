@@ -8,8 +8,7 @@ name := "bwhc-icd-catalogs"
 organization in ThisBuild := "de.bwhc"
 //scalaVersion in ThisBuild := "2.13.0"
 scalaVersion in ThisBuild := "2.12.8"
-version in ThisBuild:= "1.0"
-
+version in ThisBuild:= "1.0-SNAPSHOT"
 
 //-----------------------------------------------------------------------------
 // PROJECTS
@@ -29,13 +28,19 @@ lazy val global = project
 lazy val icd_catalogs_api = project
   .settings(
     name := "icd-catalogs-api",
-    settings
+    settings,
+    libraryDependencies ++= Seq(
+      dependencies.play_json
+    )
   )
 
 lazy val icd_catalogs_impl = project
   .settings(
     name := "icd-catalogs-impl",
-    settings
+    settings,
+    libraryDependencies ++= Seq(
+      dependencies.scala_xml
+    )
   )
   .dependsOn(icd_catalogs_api)
 
@@ -63,7 +68,8 @@ lazy val dependencies =
     val scalatest  = "org.scalatest"     %% "scalatest"        % "3.0.8"
     val slf4j      = "org.slf4j"         %  "slf4j-api"        % "1.7.26"
     val logback    = "ch.qos.logback"    %  "logback-classic"  % "1.0.13"
-//    val play_json  = "com.typesafe.play" %% "play-json"        % "2.7.0"
+    val play_json  = "com.typesafe.play" %% "play-json"        % "2.8.0"
+    val scala_xml  = "org.scala-lang.modules" %% "scala-xml"   % "2.0.0-M1"
   }
 
 lazy val commonDependencies = Seq(

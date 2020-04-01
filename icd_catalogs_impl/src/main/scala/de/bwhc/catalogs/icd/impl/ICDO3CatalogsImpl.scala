@@ -16,7 +16,11 @@ import de.bwhc.catalogs.icd.{
 
 class ICDO3CatalogsProviderImpl extends ICDO3CatalogsProvider
 {
-  def getInstance: ICDO3Catalogs = ICDO3CatalogsImpl
+
+  def getInstance: ICDO3Catalogs = {
+    ICDO3CatalogsImpl
+  }
+
 }
 
 
@@ -25,33 +29,42 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
 
   import scala.concurrent.ExecutionContext.Implicits._
 
-  private lazy val topographyCatalogs: Map[ICDO3.Version,Iterable[ICDO3TCoding]] =
+  private val topographyCatalogs: Map[ICDO3.Version,Iterable[ICDO3TCoding]] =
     ICDO3.versions
       .map {
         version =>
+          val inStream =
+            this.getClass
+              .getClassLoader
+              .getResourceAsStream("icdo3" + version + ".xml")
+            
           val codings =
-            ClaMLICDO3TParser.parse(
-              this.getClass
-                .getClassLoader
-                .getResourceAsStream("icdo3" + version + ".xml")
-            )
-            .map(cd => ICDO3TCoding(cd._1,cd._2,version))
-        (version,codings)
+            ClaMLICDO3TParser.parse(inStream)
+              .map(cd => ICDO3TCoding(cd._1,cd._2,version))
+
+          inStream.close
+ 
+         (version,codings)
       }
       .toMap
+    
 
-  private lazy val morphologyCatalogs: Map[ICDO3.Version,Iterable[ICDO3MCoding]] =
+  private val morphologyCatalogs: Map[ICDO3.Version,Iterable[ICDO3MCoding]] =
     ICDO3.versions
       .map {
         version =>
+          val inStream =
+            this.getClass
+              .getClassLoader
+              .getResourceAsStream("icdo3" + version + ".xml")
+
           val codings =
-            ClaMLICDO3MParser.parse(
-              this.getClass
-                .getClassLoader
-                .getResourceAsStream("icdo3" + version + ".xml")
-            )
-            .map(cd => ICDO3MCoding(cd._1,cd._2,version))
-        (version,codings)
+            ClaMLICDO3MParser.parse(inStream)
+              .map(cd => ICDO3MCoding(cd._1,cd._2,version))
+
+          inStream.close
+
+          (version,codings)
       }
       .toMap
 
@@ -59,7 +72,7 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
   def topographyCodings(
     version: ICDO3.Version
   ): Future[Iterable[ICDO3TCoding]] =
-    Future { topographyCatalogs(version) }
+    Future.successful(topographyCatalogs(version))
 
   def topographyMatches(
     version: ICDO3.Version,
@@ -71,7 +84,7 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
   def morphologyCodings(
     version: ICDO3.Version
   ): Future[Iterable[ICDO3MCoding]] =
-    Future { morphologyCatalogs(version) }
+    Future.successful(morphologyCatalogs(version))
 
   def morphologyMatches(
     version: ICDO3.Version,

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
 <!DOCTYPE ClaML SYSTEM "ClaML.dtd">
+-->
 <ClaML version="2.0.0">
 	<Meta name="TopLevelSort" value="T M"/>
 	<Meta name="copyright" value="Copyright WHO, DIMDI 2003 - 2014"/>

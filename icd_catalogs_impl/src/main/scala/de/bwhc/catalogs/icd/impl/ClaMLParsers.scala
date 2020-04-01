@@ -12,10 +12,14 @@ import java.io.{
   FileInputStream
 }
 
+/*
 import javax.xml.stream.{
   XMLInputFactory,
   XMLStreamReader => XMLStream
 }
+*/
+
+import scala.xml._
 
 import de.bwhc.catalogs.icd.{
   ICDO3,
@@ -29,28 +33,30 @@ import de.bwhc.catalogs.icd.{
 trait ClaMLParser[C]
 {
 
-  val factory = XMLInputFactory.newFactory
+//  val factory = XMLInputFactory.newFactory
 
   def parse(in: InputStream): Iterable[(C,String)]
 
+/*
   def readCoding(xml: XMLStream): (String,String) = {
 
     var code  = xml.getAttributeValue(null,"code")
     var label = new String
 
     breakable {
-       while (!(xml.isEndElement && xml.getLocalName.equals("Class"))){
 
-          xml.next
+      while (!(xml.isEndElement && xml.getLocalName.equals("Class"))){
 
-          if (xml.isStartElement
-             && xml.getLocalName.equals("Rubric")
-             && Option(xml.getAttributeValue(null,"kind")).exists(k => k.equals("preferredLong") || k.equals("preferred"))){
+        xml.next
 
-             label = readLabel(xml)
-             break
-          }
-       }
+        if (xml.isStartElement
+           && xml.getLocalName.equals("Rubric")
+           && Option(xml.getAttributeValue(null,"kind")).exists(k => k.equals("preferredLong") || k.equals("preferred"))){
+
+           label = readLabel(xml)
+           break
+        }
+      }
     }
     (code,label)
   }
@@ -61,23 +67,25 @@ trait ClaMLParser[C]
     var label = new String
 
     breakable {
-       while (!(xml.isEndElement && xml.getLocalName.equals("Rubric"))){
+      while (!(xml.isEndElement && xml.getLocalName.equals("Rubric"))){
       
+        xml.next
+
+        if (xml.isStartElement && xml.getLocalName.equals("Label")){
+
           xml.next
 
-          if (xml.isStartElement && xml.getLocalName.equals("Label")){
-
-             xml.next
-
-             if (xml.isCharacters){
-                label = xml.getText
-                break
-             }
+          if (xml.isCharacters){
+             label = xml.getText
+             break
           }
-       }
+        }
+      }
     }
     label
   }
+*/
+
 }
 
 
@@ -86,7 +94,31 @@ object ClaMLICD10GMParser extends ClaMLParser[ICD10GM.Code]
 
   private val icd10code = "([A-Z]\\d{2}\\.\\d{1,2})".r
 
+  def parse(in: InputStream): Iterable[(ICD10GM.Code,String)] = {
 
+    val claml = XML.load(in)
+
+    val codings =
+      (claml \\ "Class")
+        .filter(
+          cl => (cl \@ "kind") == "category" &&
+                icd10code.findFirstIn((cl \@ "code")).isDefined
+        )
+        .map { cl =>
+          val code   = (cl \@ "code")
+          val rubric = (cl \ "Rubric")
+          val label  = (rubric.find(_ \@ "kind" == "preferredLong")
+                          .orElse(rubric.find(_ \@ "kind" == "preferred")).get) \ "Label" text
+
+          (ICD10GM.Code(code),label)
+        }
+
+    codings
+
+  }
+
+
+/*
   def parse(in: InputStream): Iterable[(ICD10GM.Code,String)] = {
 
     val xml = factory.createXMLStreamReader(in)
@@ -108,10 +140,10 @@ object ClaMLICD10GMParser extends ClaMLParser[ICD10GM.Code]
          codings += cd
       }
     }
-    in.close
     codings
 
   }
+*/
 
 }
 
@@ -120,10 +152,28 @@ object ClaMLICD10GMParser extends ClaMLParser[ICD10GM.Code]
 object ClaMLICDO3TParser extends ClaMLParser[ICDO3.TopographyCode]
 {
 
-  private val icdO3code = "(C\\d{2}\\.\\d{1})".r
+  private val icdO3Tcode = "(C\\d{2}\\.\\d{1})".r
 
   def parse(in: InputStream): Iterable[(ICDO3.TopographyCode,String)] = {
 
+    val claml = XML.load(in)
+
+    val codings =
+      (claml \\ "Class")
+        .filter(
+          cl => (cl \@ "kind") == "category" &&
+                icdO3Tcode.findFirstIn((cl \@ "code")).isDefined
+        )
+        .map { cl =>
+          val code   = (cl \@ "code")
+          val label  = (cl \ "Rubric").find(_ \@ "kind" == "preferred").get \ "Label" text
+
+          (ICDO3.TopographyCode(code),label)
+        }
+
+    codings
+
+/*
     val xml = factory.createXMLStreamReader(in)
 
     val codings = MutableList.empty[(ICDO3.TopographyCode,String)]
@@ -139,7 +189,7 @@ object ClaMLICDO3TParser extends ClaMLParser[ICDO3.TopographyCode]
       if (xml.isStartElement
          && xml.getLocalName.equals("Class")
          && Option(xml.getAttributeValue(null,"kind")).exists(_.equals("category"))
-         && icdO3code.findFirstIn(xml.getAttributeValue(null,"code")).isDefined ){ // read only "leaf" categories, e.g. C04.5
+         && icdO3Tcode.findFirstIn(xml.getAttributeValue(null,"code")).isDefined ){ // read only "leaf" categories, e.g. C04.5
 
          val (code,display) = readCoding(xml)
 
@@ -147,9 +197,8 @@ object ClaMLICDO3TParser extends ClaMLParser[ICDO3.TopographyCode]
          codings += cd
       }
     }
-    in.close
     codings
-
+*/
   }
 
 }
@@ -158,8 +207,28 @@ object ClaMLICDO3TParser extends ClaMLParser[ICDO3.TopographyCode]
 object ClaMLICDO3MParser extends ClaMLParser[ICDO3.MorphologyCode]
 {
 
+  private val icdO3Mcode = "(\\d{4}\\:\\d{1})".r
+
   def parse(in: InputStream): Iterable[(ICDO3.MorphologyCode,String)] = {
 
+    val claml = XML.load(in)
+
+    val codings =
+      (claml \\ "Class")
+        .filter(
+          cl => (cl \@ "kind") == "category" &&
+                icdO3Mcode.findFirstIn((cl \@ "code")).isDefined
+        )
+        .map { cl =>
+          val code   = (cl \@ "code")
+          val label  = (cl \ "Rubric").find(_ \@ "kind" == "preferred").get \ "Label" text
+
+          (ICDO3.MorphologyCode(code),label)
+        }
+
+    codings
+
+/*
     val xml = factory.createXMLStreamReader(in)
 
     val codings = MutableList.empty[(ICDO3.MorphologyCode,String)]
@@ -187,9 +256,8 @@ object ClaMLICDO3MParser extends ClaMLParser[ICDO3.MorphologyCode]
          codings += cd
       }
     }
-    in.close
     codings
-
+*/
   }
 
 }

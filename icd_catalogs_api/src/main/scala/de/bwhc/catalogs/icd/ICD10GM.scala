@@ -5,6 +5,8 @@ package de.bwhc.catalogs.icd
 import java.time.Year
 
 
+import play.api.libs.json._
+
 object ICD10GM
 {
 
@@ -28,6 +30,8 @@ object ICD10GM
 
     def apply(y: Int): Version = apply(Year.of(y))
 
+    def apply(y: String): Version = apply(y.toInt)
+
     def current: Version = apply(Year.now)
 
   }
@@ -37,6 +41,18 @@ object ICD10GM
       Version2020,
       Version2019
     )
+
+  implicit val formatCode: Format[Code] =
+    new Format[Code]{
+      def reads(js: JsValue): JsResult[Code] = js.validate[String].map(Code(_))
+      def writes(c: Code): JsValue = JsString(c.value)
+    }
+
+  implicit val formatVersion: Format[Version] =
+    new Format[Version]{
+      def reads(js: JsValue): JsResult[Version] = js.validate[String].map(Version(_))
+      def writes(v: Version): JsValue = JsString(v.toString)
+    }
 
 }
 
@@ -48,3 +64,7 @@ case class ICD10GMCoding
   version: ICD10GM.Version = ICD10GM.Version.current
 )
 
+object ICD10GMCoding
+{
+  implicit val formatICD10GMCoding = Json.format[ICD10GMCoding]
+}
