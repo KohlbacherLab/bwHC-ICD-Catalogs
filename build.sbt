@@ -6,9 +6,17 @@
 
 name := "bwhc-icd-catalogs"
 organization in ThisBuild := "de.bwhc"
-//scalaVersion in ThisBuild := "2.13.0"
-scalaVersion in ThisBuild := "2.12.8"
 version in ThisBuild:= "1.0-SNAPSHOT"
+
+lazy val scala212 = "2.12.10"
+lazy val scala213 = "2.13.1"
+lazy val supportedScalaVersions =
+  List(
+    scala212,
+    scala213
+  )
+
+scalaVersion in ThisBuild := scala213
 
 //-----------------------------------------------------------------------------
 // PROJECTS
@@ -16,7 +24,11 @@ version in ThisBuild:= "1.0-SNAPSHOT"
 
 lazy val global = project
   .in(file("."))
-  .settings(settings)
+  .settings(
+    settings,
+    crossScalaVersions := Nil,
+    publish / skip := true
+  )
   .aggregate(
      api,
      impl,
@@ -31,7 +43,8 @@ lazy val api = project
     settings,
     libraryDependencies ++= Seq(
       dependencies.play_json
-    )
+    ),
+    crossScalaVersions := supportedScalaVersions
   )
 
 lazy val impl = project
@@ -40,7 +53,8 @@ lazy val impl = project
     settings,
     libraryDependencies ++= Seq(
       dependencies.scala_xml
-    )
+    ),
+    crossScalaVersions := supportedScalaVersions
   )
   .dependsOn(api)
 
@@ -50,7 +64,9 @@ lazy val tests = project
     settings,
     libraryDependencies ++= Seq(
       dependencies.scalatest % "test"
-    )
+    ),
+    crossScalaVersions := supportedScalaVersions,
+    publish / skip := true
   )
   .dependsOn(
     api,
@@ -65,11 +81,11 @@ lazy val tests = project
 
 lazy val dependencies =
   new {
-    val scalatest  = "org.scalatest"     %% "scalatest"        % "3.0.8"
-    val slf4j      = "org.slf4j"         %  "slf4j-api"        % "1.7.26"
-    val logback    = "ch.qos.logback"    %  "logback-classic"  % "1.0.13"
-    val play_json  = "com.typesafe.play" %% "play-json"        % "2.8.0"
-    val scala_xml  = "org.scala-lang.modules" %% "scala-xml"   % "2.0.0-M1"
+    val scalatest  = "org.scalatest"          %% "scalatest"        % "3.0.8"
+    val slf4j      = "org.slf4j"              %  "slf4j-api"        % "1.7.26"
+    val logback    = "ch.qos.logback"         %  "logback-classic"  % "1.0.13"
+    val play_json  = "com.typesafe.play"      %% "play-json"        % "2.8.0"
+    val scala_xml  = "org.scala-lang.modules" %% "scala-xml"        % "2.0.0-M1"
   }
 
 lazy val commonDependencies = Seq(
@@ -87,14 +103,14 @@ lazy val settings = commonSettings
 
 lazy val compilerOptions = Seq(
   "-unchecked",
-//  "-feature",
+  "-feature",
+  "-Xfatal-warnings",
 //  "-language:existentials",
 //  "-language:higherKinds",
 //  "-language:implicitConversions",
-//  "-language:postfixOps",
+  "-language:postfixOps",
   "-deprecation",
-  "-encoding",
-  "utf8"
+  "-encoding", "utf8"
 )
 
 lazy val commonSettings = Seq(
