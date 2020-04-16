@@ -18,14 +18,14 @@ lazy val global = project
   .in(file("."))
   .settings(settings)
   .aggregate(
-     icd_catalogs_api,
-     icd_catalogs_impl,
+     api,
+     impl,
      tests
   )
 
 
 
-lazy val icd_catalogs_api = project
+lazy val api = project
   .settings(
     name := "icd-catalogs-api",
     settings,
@@ -34,7 +34,7 @@ lazy val icd_catalogs_api = project
     )
   )
 
-lazy val icd_catalogs_impl = project
+lazy val impl = project
   .settings(
     name := "icd-catalogs-impl",
     settings,
@@ -42,7 +42,7 @@ lazy val icd_catalogs_impl = project
       dependencies.scala_xml
     )
   )
-  .dependsOn(icd_catalogs_api)
+  .dependsOn(api)
 
 lazy val tests = project
   .settings(
@@ -53,8 +53,8 @@ lazy val tests = project
     )
   )
   .dependsOn(
-    icd_catalogs_api,
-    icd_catalogs_impl % "test"
+    api,
+    impl % "test"
   )
 
 

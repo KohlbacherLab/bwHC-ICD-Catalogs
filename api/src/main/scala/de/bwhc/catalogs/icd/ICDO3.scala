@@ -68,8 +68,8 @@ object ICDO3
 case class ICDO3TCoding
 (
   code: ICDO3.TopographyCode,
-  display: String,
-  version: ICDO3.Version = ICDO3.Version2014
+  display: Option[String] = None,
+  version: ICDO3.Version = ICDO3.Version.current
 )
 
 object ICDO3TCoding
@@ -80,7 +80,7 @@ object ICDO3TCoding
 case class ICDO3MCoding
 (
   code: ICDO3.MorphologyCode,
-  display: String,
+  display: Option[String] = None,
   version: ICDO3.Version = ICDO3.Version.current
 )
 

@@ -30,6 +30,7 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
   import scala.concurrent.ExecutionContext.Implicits._
 
   private val topographyCatalogs: Map[ICDO3.Version,Iterable[ICDO3TCoding]] =
+    this.synchronized {
     ICDO3.versions
       .map {
         version =>
@@ -40,16 +41,17 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
             
           val codings =
             ClaMLICDO3TParser.parse(inStream)
-              .map(cd => ICDO3TCoding(cd._1,cd._2,version))
+              .map(cd => ICDO3TCoding(cd._1,Some(cd._2),version))
 
           inStream.close
  
          (version,codings)
       }
       .toMap
-    
+    }
 
   private val morphologyCatalogs: Map[ICDO3.Version,Iterable[ICDO3MCoding]] =
+    this.synchronized {
     ICDO3.versions
       .map {
         version =>
@@ -60,14 +62,14 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
 
           val codings =
             ClaMLICDO3MParser.parse(inStream)
-              .map(cd => ICDO3MCoding(cd._1,cd._2,version))
+              .map(cd => ICDO3MCoding(cd._1,Some(cd._2),version))
 
           inStream.close
 
           (version,codings)
       }
       .toMap
-
+    }
 
   def topographyCodings(
     version: ICDO3.Version
@@ -78,7 +80,10 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
     version: ICDO3.Version,
     text: String
   ): Future[Iterable[ICDO3TCoding]] =
-    topographyCodings(version).map(_.filter(_.display.contains(text)))
+    topographyCodings(version)
+      .map(
+        _.filter(_.display.exists(_.contains(text)))
+      )
 
 
   def morphologyCodings(
@@ -90,7 +95,9 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
     version: ICDO3.Version,
     text: String
   ): Future[Iterable[ICDO3MCoding]] =
-    morphologyCodings(version).map(_.filter(_.display.contains(text)))
-
+    morphologyCodings(version)
+      .map(
+        _.filter(_.display.exists(_.contains(text)))
+      )
 
 }

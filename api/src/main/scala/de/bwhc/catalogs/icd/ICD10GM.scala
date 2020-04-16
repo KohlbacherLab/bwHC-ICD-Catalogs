@@ -60,7 +60,7 @@ object ICD10GM
 case class ICD10GMCoding
 (
   code: ICD10GM.Code,
-  display: String,
+  display: Option[String] = None,
   version: ICD10GM.Version = ICD10GM.Version.current
 )
 
