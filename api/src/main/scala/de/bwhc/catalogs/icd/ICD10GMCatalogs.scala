@@ -47,20 +47,28 @@ trait ICD10GMCatalogs
 
   def codings(
     version: ICD10GM.Version
+  )(
+    implicit ec: ExecutionContext
   ): Future[Iterable[ICD10GMCoding]]
 
-  def codings: Future[Iterable[ICD10GMCoding]] =
+  def codings(
+    implicit ec: ExecutionContext
+  ): Future[Iterable[ICD10GMCoding]] =
     codings(ICD10GM.Version.current)
 
 
   def matches(
     version: ICD10GM.Version,
     text: String
+  )(
+    implicit ec: ExecutionContext
   ): Future[Iterable[ICD10GMCoding]]
 
 
   def matches(
     text: String
+  )(
+    implicit ec: ExecutionContext
   ): Future[Iterable[ICD10GMCoding]] =
     matches(
       ICD10GM.Version.current,

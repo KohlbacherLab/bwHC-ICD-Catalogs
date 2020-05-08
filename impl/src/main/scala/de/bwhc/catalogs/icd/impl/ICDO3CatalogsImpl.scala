@@ -2,7 +2,7 @@ package de.bwhc.catalogs.icd.impl
 
 
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext,Future}
 
 import de.bwhc.catalogs.icd.{
   ICDO3,
@@ -27,7 +27,6 @@ class ICDO3CatalogsProviderImpl extends ICDO3CatalogsProvider
 object ICDO3CatalogsImpl extends ICDO3Catalogs
 {
 
-  import scala.concurrent.ExecutionContext.Implicits._
 
   private val topographyCatalogs: Map[ICDO3.Version,Iterable[ICDO3TCoding]] =
     this.synchronized {
@@ -73,12 +72,16 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
 
   def topographyCodings(
     version: ICDO3.Version
+  )(
+    implicit ec: ExecutionContext
   ): Future[Iterable[ICDO3TCoding]] =
-    Future.successful(topographyCatalogs(version))
+    Future { topographyCatalogs(version) }
 
   def topographyMatches(
     version: ICDO3.Version,
     text: String
+  )(
+    implicit ec: ExecutionContext
   ): Future[Iterable[ICDO3TCoding]] =
     topographyCodings(version)
       .map(
@@ -88,12 +91,16 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
 
   def morphologyCodings(
     version: ICDO3.Version
+  )(
+    implicit ec: ExecutionContext
   ): Future[Iterable[ICDO3MCoding]] =
-    Future.successful(morphologyCatalogs(version))
+    Future { morphologyCatalogs(version) }
 
   def morphologyMatches(
     version: ICDO3.Version,
     text: String
+  )(
+    implicit ec: ExecutionContext
   ): Future[Iterable[ICDO3MCoding]] =
     morphologyCodings(version)
       .map(

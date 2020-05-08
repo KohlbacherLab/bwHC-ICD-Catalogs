@@ -30,8 +30,6 @@ class ICD10GMCatalogsProviderImpl extends ICD10GMCatalogsProvider
 object ICD10GMCatalogsImpl extends ICD10GMCatalogs
 {
 
-  import scala.concurrent.ExecutionContext.Implicits._
-
   private lazy val catalogs: Map[ICD10GM.Version,Iterable[ICD10GMCoding]] =
     this.synchronized {
     ICD10GM.versions
@@ -40,7 +38,7 @@ object ICD10GMCatalogsImpl extends ICD10GMCatalogs
           val inStream =
             this.getClass
               .getClassLoader
-              .getResourceAsStream("icd10gm" + version + ".xml")
+              .getResourceAsStream(s"icd10gm$version.xml")
 
           val codings =
             ClaMLICD10GMParser.parse(inStream)
@@ -55,6 +53,8 @@ object ICD10GMCatalogsImpl extends ICD10GMCatalogs
 
   def codings(
     version: ICD10GM.Version
+  )(
+    implicit ec: ExecutionContext
   ): Future[Iterable[ICD10GMCoding]] = {
     Future { catalogs(version) }
   }  
@@ -63,6 +63,8 @@ object ICD10GMCatalogsImpl extends ICD10GMCatalogs
   def matches(
     version: ICD10GM.Version,
     text: String
+  )(
+    implicit ec: ExecutionContext
   ): Future[Iterable[ICD10GMCoding]] =
     codings(version)
       .map(_.filter(_.display.exists(_.contains(text))))
