@@ -19,7 +19,7 @@ trait ICDO3Catalogs
 
 
   def topographyCodings(
-    version: ICDO3.Version
+    version: ICDO3.Version.Value
   )(
     implicit ec: ExecutionContext
   ): Future[Iterable[ICDO3TCoding]]
@@ -30,7 +30,7 @@ trait ICDO3Catalogs
     topographyCodings(ICDO3.Version.current)
 
   def topographyMatches(
-    version: ICDO3.Version,
+    version: ICDO3.Version.Value,
     text: String
   )(
     implicit ec: ExecutionContext
@@ -48,7 +48,7 @@ trait ICDO3Catalogs
 
 
   def morphologyCodings(
-    version: ICDO3.Version
+    version: ICDO3.Version.Value
   )(
     implicit ec: ExecutionContext
   ): Future[Iterable[ICDO3MCoding]]
@@ -59,7 +59,7 @@ trait ICDO3Catalogs
     morphologyCodings(ICDO3.Version.current)
 
   def morphologyMatches(
-    version: ICDO3.Version,
+    version: ICDO3.Version.Value,
     text: String
   )(
     implicit ec: ExecutionContext

@@ -28,15 +28,17 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
 {
 
 
-  private val topographyCatalogs: Map[ICDO3.Version,Iterable[ICDO3TCoding]] =
+  private val topographyCatalogs: Map[ICDO3.Version.Value,Iterable[ICDO3TCoding]] =
     this.synchronized {
-    ICDO3.versions
+    ICDO3.Version.values
+      .toList
       .map {
         version =>
+
           val inStream =
             this.getClass
               .getClassLoader
-              .getResourceAsStream("icdo3" + version + ".xml")
+              .getResourceAsStream(s"icdo3${version}.xml")
             
           val codings =
             ClaMLICDO3TParser.parse(inStream)
@@ -49,15 +51,16 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
       .toMap
     }
 
-  private val morphologyCatalogs: Map[ICDO3.Version,Iterable[ICDO3MCoding]] =
+  private val morphologyCatalogs: Map[ICDO3.Version.Value,Iterable[ICDO3MCoding]] =
     this.synchronized {
-    ICDO3.versions
+    ICDO3.Version.values
+      .toList
       .map {
         version =>
           val inStream =
             this.getClass
               .getClassLoader
-              .getResourceAsStream("icdo3" + version + ".xml")
+              .getResourceAsStream(s"icdo3${version}.xml")
 
           val codings =
             ClaMLICDO3MParser.parse(inStream)
@@ -71,14 +74,14 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
     }
 
   def topographyCodings(
-    version: ICDO3.Version
+    version: ICDO3.Version.Value
   )(
     implicit ec: ExecutionContext
   ): Future[Iterable[ICDO3TCoding]] =
     Future { topographyCatalogs(version) }
 
   def topographyMatches(
-    version: ICDO3.Version,
+    version: ICDO3.Version.Value,
     text: String
   )(
     implicit ec: ExecutionContext
@@ -90,14 +93,14 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
 
 
   def morphologyCodings(
-    version: ICDO3.Version
+    version: ICDO3.Version.Value
   )(
     implicit ec: ExecutionContext
   ): Future[Iterable[ICDO3MCoding]] =
     Future { morphologyCatalogs(version) }
 
   def morphologyMatches(
-    version: ICDO3.Version,
+    version: ICDO3.Version.Value,
     text: String
   )(
     implicit ec: ExecutionContext

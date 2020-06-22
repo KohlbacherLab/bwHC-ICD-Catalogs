@@ -46,7 +46,7 @@ trait ICD10GMCatalogs
 */
 
   def codings(
-    version: ICD10GM.Version
+    version: ICD10GM.Version.Value
   )(
     implicit ec: ExecutionContext
   ): Future[Iterable[ICD10GMCoding]]
@@ -58,7 +58,7 @@ trait ICD10GMCatalogs
 
 
   def matches(
-    version: ICD10GM.Version,
+    version: ICD10GM.Version.Value,
     text: String
   )(
     implicit ec: ExecutionContext
