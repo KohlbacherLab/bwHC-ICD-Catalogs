@@ -17,7 +17,30 @@ trait ICDO3CatalogsProvider
 trait ICDO3Catalogs
 {
 
+  def topographyCodings(
+    version: ICDO3.Version.Value = ICDO3.Version.current
+  ): Iterable[ICDO3TCoding]
 
+
+  def topographyMatches(
+    text: String,
+    version: ICDO3.Version.Value = ICDO3.Version.current,
+  ): Iterable[ICDO3TCoding]
+
+
+
+  def morphologyCodings(
+    version: ICDO3.Version.Value = ICDO3.Version.current
+  ): Iterable[ICDO3MCoding]
+
+
+  def morphologyMatches(
+    text: String,
+    version: ICDO3.Version.Value = ICDO3.Version.current
+  ): Iterable[ICDO3MCoding]
+
+
+/*
   def topographyCodings(
     version: ICDO3.Version.Value
   )(
@@ -74,7 +97,7 @@ trait ICDO3Catalogs
       ICDO3.Version.current,
       text
     )
-
+*/
 }
 
 

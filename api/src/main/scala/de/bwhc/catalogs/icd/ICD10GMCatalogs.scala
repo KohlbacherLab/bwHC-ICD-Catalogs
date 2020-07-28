@@ -21,30 +21,26 @@ trait ICD10GMCatalogsProvider
 
 trait ICD10GMCatalogs
 {
-/*
+
   def codings(
-    version: ICD10GM.Version
-  ): Iterable[ICD10GMCoding]
-
-  def codings: Iterable[ICD10GMCoding] =
-    codings(ICD10GM.Version.current)
-
-
-  def matches(
-    version: ICD10GM.Version,
-    text: String
+    version: ICD10GM.Version.Value = ICD10GM.Version.current
   ): Iterable[ICD10GMCoding]
 
 
-  def matches(
-    text: String
-  ): Iterable[ICD10GMCoding] =
-    matches(
-      ICD10GM.Version.current,
-      text
-    )
-*/
+  def code(
+    code: ICD10GM.Code,
+    version: ICD10GM.Version.Value = ICD10GM.Version.current
+  ): Option[ICD10GMCoding] =
+    codings(version).find(_.code == code)
 
+
+  def matches(
+    text: String,
+    version: ICD10GM.Version.Value = ICD10GM.Version.current
+  ): Iterable[ICD10GMCoding]
+
+
+/*
   def codings(
     version: ICD10GM.Version.Value
   )(
@@ -74,6 +70,7 @@ trait ICD10GMCatalogs
       ICD10GM.Version.current,
       text
     )
+*/
 
 }
 

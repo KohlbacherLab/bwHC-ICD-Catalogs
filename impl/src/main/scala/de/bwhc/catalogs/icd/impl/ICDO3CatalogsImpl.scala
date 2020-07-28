@@ -73,6 +73,37 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
       .toMap
     }
 
+
+  def topographyCodings(
+    version: ICDO3.Version.Value = ICDO3.Version.current
+  ): Iterable[ICDO3TCoding] = 
+    topographyCatalogs(version)
+
+
+  def topographyMatches(
+    text: String,
+    version: ICDO3.Version.Value = ICDO3.Version.current,
+  ): Iterable[ICDO3TCoding] =
+    topographyCodings(version).filter(_.display.exists(_.contains(text)))
+
+
+
+  def morphologyCodings(
+    version: ICDO3.Version.Value = ICDO3.Version.current
+  ): Iterable[ICDO3MCoding] =
+    morphologyCatalogs(version)
+
+
+  def morphologyMatches(
+    text: String,
+    version: ICDO3.Version.Value = ICDO3.Version.current
+  ): Iterable[ICDO3MCoding] =
+    morphologyCodings(version)
+      .filter(_.display.exists(_.contains(text)))
+
+
+
+/*
   def topographyCodings(
     version: ICDO3.Version.Value
   )(
@@ -109,5 +140,6 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
       .map(
         _.filter(_.display.exists(_.contains(text)))
       )
+*/
 
 }

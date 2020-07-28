@@ -52,6 +52,19 @@ object ICD10GMCatalogsImpl extends ICD10GMCatalogs
       .toMap
     }
 
+
+  def codings(
+    version: ICD10GM.Version.Value
+  ): Iterable[ICD10GMCoding] =
+    catalogs(version)
+
+  def matches(
+    text: String,
+    version: ICD10GM.Version.Value
+  ): Iterable[ICD10GMCoding] =
+    codings(version).filter(_.display.exists(_.contains(text)))
+
+/*
   def codings(
     version: ICD10GM.Version.Value
   )(
@@ -69,5 +82,6 @@ object ICD10GMCatalogsImpl extends ICD10GMCatalogs
   ): Future[Iterable[ICD10GMCoding]] =
     codings(version)
       .map(_.filter(_.display.exists(_.contains(text))))
+*/
 
 }

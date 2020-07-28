@@ -19,32 +19,46 @@ object Catalogs
 
 }
 
-class Tests extends AsyncFlatSpec
+//class Tests extends AsyncFlatSpec
+class Tests extends FlatSpec
 {
 
   import Catalogs._
 
 
+/*
   "ICD10GMCatalogs" should "be loaded and return matches for 'Pankreas'" in {
 
     icd10gm.matches("Pankreas")
       .map(cs => assert(!cs.isEmpty))
 
   }
+*/
 
-/*
   "ICD10GMCatalogs" should "be loaded and printed" in {
 
+    assert(
+      !icd10gm.codings()
+        .filter(_.code.value.startsWith("C"))
+        .isEmpty
+    )
+/*
     for {
-      cs <- icd10gm.codings
+      cs <- icd10gm.codings()
       oncos = cs.filter(_.code.value.startsWith("C"))
       _ = oncos.foreach(c => println(c.code.value + "   " + c.display.get))
     } yield assert(!oncos.isEmpty)
+*/
+  }
+
+
+  "ICDO3Catalogs" should "be loaded and return topography matches for 'Pankreas'" in {
+
+    assert(!icdO3.topographyMatches("Pankreas").isEmpty)
 
   }
-*/
 
-
+/*
   "ICDO3Catalogs" should "be loaded and return topography matches for 'Pankreas'" in {
 
     icdO3.topographyMatches("Pankreas")
@@ -52,7 +66,6 @@ class Tests extends AsyncFlatSpec
 
   }
 
-/*
   "ICDO3Catalogs" should "be loaded and print topography codes" in {
 
     for {
