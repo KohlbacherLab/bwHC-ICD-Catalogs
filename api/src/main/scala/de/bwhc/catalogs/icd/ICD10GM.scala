@@ -16,9 +16,9 @@ object ICD10GM
   {
     type Version = Value
 
+    val Version2021 = Value("2021")
     val Version2020 = Value("2020")
     val Version2019 = Value("2019")
-    //TODO: previous versions
 
     def apply(y: Year): Version = withName(y.toString)
 
