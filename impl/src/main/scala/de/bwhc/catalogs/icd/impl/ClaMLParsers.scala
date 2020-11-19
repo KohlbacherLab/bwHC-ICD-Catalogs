@@ -104,7 +104,11 @@ object ClaMLICDO3MParser extends ClaMLParser[ICDO3.MorphologyCode]
           val code   = (cl \@ "code")
           val label  = (cl \ "Rubric").find(_ \@ "kind" == "preferred").get \ "Label" text
 
-          (ICDO3.MorphologyCode(code),label)
+          // The replacement of : (colon) with / (slash) is required
+          // because ClaML ICD-O-3-M code have format xxxx:x but "official" display format is xxxx/x
+          (ICDO3.MorphologyCode(code.replace(":","/")),label)
+
+//          (ICDO3.MorphologyCode(code),label)
         }
 
     codings
