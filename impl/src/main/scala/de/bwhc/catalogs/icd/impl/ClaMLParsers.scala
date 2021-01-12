@@ -36,8 +36,9 @@ object ClaMLICD10GMParser extends ClaMLParser[ICD10GM.Code]
     val codings =
       (claml \\ "Class")
         .filter(
-          cl => (cl \@ "kind") == "category" &&
-                icd10code.findFirstIn((cl \@ "code")).isDefined
+//          cl => (cl \@ "kind") == "category" &&
+//                icd10code.findFirstIn((cl \@ "code")).isDefined
+          cl => (cl \@ "kind") == "category"
         )
         .map { cl =>
           val code   = (cl \@ "code")
@@ -107,8 +108,6 @@ object ClaMLICDO3MParser extends ClaMLParser[ICDO3.MorphologyCode]
           // The replacement of : (colon) with / (slash) is required
           // because ClaML ICD-O-3-M code have format xxxx:x but "official" display format is xxxx/x
           (ICDO3.MorphologyCode(code.replace(":","/")),label)
-
-//          (ICDO3.MorphologyCode(code),label)
         }
 
     codings
