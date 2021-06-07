@@ -85,7 +85,8 @@ lazy val dependencies =
     val slf4j      = "org.slf4j"              %  "slf4j-api"        % "1.7.26"
     val logback    = "ch.qos.logback"         %  "logback-classic"  % "1.0.13"
     val play_json  = "com.typesafe.play"      %% "play-json"        % "2.8.1"
-    val scala_xml  = "org.scala-lang.modules" %% "scala-xml"        % "2.0.0-M1"
+    val scala_xml  = "org.scala-lang.modules" %% "scala-xml"        % "2.0.0"
+//    val scala_xml  = "org.scala-lang.modules" %% "scala-xml"        % "2.0.0-M1"
   }
 
 lazy val commonDependencies = Seq(
