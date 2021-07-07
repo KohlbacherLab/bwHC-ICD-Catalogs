@@ -12,6 +12,7 @@ import de.bwhc.catalogs.icd.{
   ICDO3Catalogs
 }
 
+import java.time.Year
 
 
 class ICDO3CatalogsProviderImpl extends ICDO3CatalogsProvider
@@ -27,7 +28,56 @@ class ICDO3CatalogsProviderImpl extends ICDO3CatalogsProvider
 object ICDO3CatalogsImpl extends ICDO3Catalogs
 {
 
+  override def availableVersions: List[Year] =
+    List(Year.of(2014))
 
+  override def currentVersion: Year =
+    availableVersions.max
+
+  private val topographyCatalogs: Map[Year,Iterable[ICDO3TCoding]] =
+    this.synchronized {
+    availableVersions
+      .map {
+        version =>
+
+          val inStream =
+            this.getClass
+              .getClassLoader
+              .getResourceAsStream(s"icdo3${version.toString}.xml")
+            
+          val codings =
+            ClaMLICDO3TParser.parse(inStream)
+              .map(cd => ICDO3TCoding(cd._1,Some(cd._2),version))
+
+          inStream.close
+ 
+         (version,codings)
+      }
+      .toMap
+    }
+
+  private val morphologyCatalogs: Map[Year,Iterable[ICDO3MCoding]] =
+    this.synchronized {
+    availableVersions
+      .map {
+        version =>
+          val inStream =
+            this.getClass
+              .getClassLoader
+              .getResourceAsStream(s"icdo3${version.toString}.xml")
+
+          val codings =
+            ClaMLICDO3MParser.parse(inStream)
+              .map(cd => ICDO3MCoding(cd._1,Some(cd._2),version))
+
+          inStream.close
+
+          (version,codings)
+      }
+      .toMap
+    }
+
+/*
   private val topographyCatalogs: Map[ICDO3.Version.Value,Iterable[ICDO3TCoding]] =
     this.synchronized {
     ICDO3.Version.values
@@ -72,31 +122,35 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
       }
       .toMap
     }
-
+*/
 
   def topographyCodings(
-    version: ICDO3.Version.Value = ICDO3.Version.current
+    version: Year// = Year.now
+//    version: ICDO3.Version.Value = ICDO3.Version.current
   ): Iterable[ICDO3TCoding] = 
     topographyCatalogs(version)
 
 
   def topographyMatches(
     text: String,
-    version: ICDO3.Version.Value = ICDO3.Version.current,
+    version: Year// = Year.now
+//    version: ICDO3.Version.Value = ICDO3.Version.current,
   ): Iterable[ICDO3TCoding] =
     topographyCodings(version).filter(_.display.exists(_.contains(text)))
 
 
 
   def morphologyCodings(
-    version: ICDO3.Version.Value = ICDO3.Version.current
+    version: Year// = Year.now
+//    version: ICDO3.Version.Value = ICDO3.Version.current
   ): Iterable[ICDO3MCoding] =
     morphologyCatalogs(version)
 
 
   def morphologyMatches(
     text: String,
-    version: ICDO3.Version.Value = ICDO3.Version.current
+    version: Year// = Year.now
+//    version: ICDO3.Version.Value = ICDO3.Version.current
   ): Iterable[ICDO3MCoding] =
     morphologyCodings(version)
       .filter(_.display.exists(_.contains(text)))

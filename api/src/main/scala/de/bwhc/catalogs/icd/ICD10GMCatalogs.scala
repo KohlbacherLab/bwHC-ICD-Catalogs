@@ -11,6 +11,8 @@ import scala.concurrent.{
 
 import java.util.ServiceLoader
 
+import java.time.Year
+
 
 trait ICD10GMCatalogsProvider
 {
@@ -18,25 +20,29 @@ trait ICD10GMCatalogsProvider
 }
 
 
-
 trait ICD10GMCatalogs
 {
 
+  def availableVersions: List[Year]
+
   def codings(
-    version: ICD10GM.Version.Value = ICD10GM.Version.current
+    version: Year = Year.now
+//    version: ICD10GM.Version.Value = ICD10GM.Version.current
   ): Iterable[ICD10GMCoding]
 
 
   def code(
     code: ICD10GM.Code,
-    version: ICD10GM.Version.Value = ICD10GM.Version.current
+    version: Year = Year.now
+//    version: ICD10GM.Version.Value = ICD10GM.Version.current
   ): Option[ICD10GMCoding] =
     codings(version).find(_.code == code)
 
 
   def matches(
     text: String,
-    version: ICD10GM.Version.Value = ICD10GM.Version.current
+    version: Year = Year.now
+//    version: ICD10GM.Version.Value = ICD10GM.Version.current
   ): Iterable[ICD10GMCoding]
 
 

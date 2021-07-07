@@ -4,7 +4,10 @@ package de.bwhc.catalogs.icd
 
 import scala.util.Try
 import scala.concurrent.{ExecutionContext,Future}
+
 import java.util.ServiceLoader
+
+import java.time.Year
 
 
 trait ICDO3CatalogsProvider
@@ -16,27 +19,37 @@ trait ICDO3CatalogsProvider
 
 trait ICDO3Catalogs
 {
+  self =>
+
+  def availableVersions: List[Year]
+
+  def currentVersion: Year
+
 
   def topographyCodings(
-    version: ICDO3.Version.Value = ICDO3.Version.current
+    version: Year = Year.now
+//    version: ICDO3.Version.Value = ICDO3.Version.current
   ): Iterable[ICDO3TCoding]
 
 
   def topographyMatches(
     text: String,
-    version: ICDO3.Version.Value = ICDO3.Version.current,
+    version: Year = self.currentVersion
+//    version: ICDO3.Version.Value = ICDO3.Version.current,
   ): Iterable[ICDO3TCoding]
 
 
 
   def morphologyCodings(
-    version: ICDO3.Version.Value = ICDO3.Version.current
+    version: Year = self.currentVersion
+//    version: ICDO3.Version.Value = ICDO3.Version.current
   ): Iterable[ICDO3MCoding]
 
 
   def morphologyMatches(
     text: String,
-    version: ICDO3.Version.Value = ICDO3.Version.current
+    version: Year = self.currentVersion
+//    version: ICDO3.Version.Value = ICDO3.Version.current
   ): Iterable[ICDO3MCoding]
 
 
