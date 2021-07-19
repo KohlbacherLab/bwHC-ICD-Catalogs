@@ -124,32 +124,32 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
     }
 */
 
-  def topographyCodings(
-    version: Year// = Year.now
+  override def topographyCodings(
+    version: Year
 //    version: ICDO3.Version.Value = ICDO3.Version.current
   ): Iterable[ICDO3TCoding] = 
     topographyCatalogs(version)
 
 
-  def topographyMatches(
+  override def topographyMatches(
     text: String,
-    version: Year// = Year.now
+    version: Year
 //    version: ICDO3.Version.Value = ICDO3.Version.current,
   ): Iterable[ICDO3TCoding] =
     topographyCodings(version).filter(_.display.exists(_.contains(text)))
 
 
 
-  def morphologyCodings(
-    version: Year// = Year.now
+  override def morphologyCodings(
+    version: Year
 //    version: ICDO3.Version.Value = ICDO3.Version.current
   ): Iterable[ICDO3MCoding] =
     morphologyCatalogs(version)
 
 
-  def morphologyMatches(
+  override def morphologyMatches(
     text: String,
-    version: Year// = Year.now
+    version: Year
 //    version: ICDO3.Version.Value = ICDO3.Version.current
   ): Iterable[ICDO3MCoding] =
     morphologyCodings(version)

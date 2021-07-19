@@ -27,7 +27,7 @@ trait ICDO3Catalogs
 
 
   def topographyCodings(
-    version: Year = Year.now
+    version: Year = self.currentVersion
 //    version: ICDO3.Version.Value = ICDO3.Version.current
   ): Iterable[ICDO3TCoding]
 
