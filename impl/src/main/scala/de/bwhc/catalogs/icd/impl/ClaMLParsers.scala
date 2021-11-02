@@ -36,8 +36,6 @@ object ClaMLICD10GMParser extends ClaMLParser[ICD10GM.Code]
     val codings =
       (claml \\ "Class")
         .filter(
-//          cl => (cl \@ "kind") == "category" &&
-//                icd10code.findFirstIn((cl \@ "code")).isDefined
           cl => (cl \@ "kind") == "category"
         )
         .map { cl =>

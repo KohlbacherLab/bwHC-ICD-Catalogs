@@ -28,6 +28,114 @@ class ICDO3CatalogsProviderImpl extends ICDO3CatalogsProvider
 object ICDO3CatalogsImpl extends ICDO3Catalogs
 {
 
+/*
+  private val versionsByYear =
+    List(
+      "Erste Revision"  -> 2014,
+      "Zweite Revision" -> 2019
+    )
+*/
+
+//  override val availableVersions: List[String] =
+//    versionsByYear.unzip._1
+
+  override val availableVersions: List[(String,Year)] =
+    List(
+      "Erste Revision"  -> Year.of(2014),
+      "Zweite Revision" -> Year.of(2019)
+    )
+
+
+  override def currentVersion: String =
+//    availableVersions.last
+    availableVersions.last._1
+
+
+  private val topographyCatalogs: Map[String,Iterable[ICDO3TCoding]] =
+    this.synchronized {
+      (
+        for {
+//          (version,year) <- versionsByYear
+          (version,year) <- availableVersions
+        } yield {
+        
+          val inStream =
+            this.getClass
+              .getClassLoader
+              .getResourceAsStream(s"icdo3${year}.xml")
+              
+            val codings =
+              ClaMLICDO3TParser.parse(inStream)
+                .map { case (code,display) => ICDO3TCoding(code,display,version) }
+        
+            inStream.close
+        
+           (version,codings)
+        }
+      )
+      .toMap
+    }
+
+
+  private val morphologyCatalogs: Map[String,Iterable[ICDO3MCoding]] =
+    this.synchronized {
+      (
+        for {
+//          (version,year) <- versionsByYear
+          (version,year) <- availableVersions
+        } yield {
+        
+          val inStream =
+            this.getClass
+              .getClassLoader
+              .getResourceAsStream(s"icdo3${year}.xml")
+        
+          val codings =
+            ClaMLICDO3MParser.parse(inStream)
+              .map { case (code,display) => ICDO3MCoding(code,display,version) }
+        
+          inStream.close
+        
+          (version,codings)
+        
+        }
+      )
+      .toMap
+    }
+
+
+  override def topographyCodings(
+    version: String
+  ): Iterable[ICDO3TCoding] = 
+    topographyCatalogs(version)
+
+
+  override def topographyMatches(
+    text: String,
+    version: String
+  ): Iterable[ICDO3TCoding] =
+    topographyCodings(version).filter(_.display.contains(text))
+
+
+  override def morphologyCodings(
+    version: String
+  ): Iterable[ICDO3MCoding] =
+    morphologyCatalogs(version)
+
+
+  override def morphologyMatches(
+    text: String,
+    version: String
+  ): Iterable[ICDO3MCoding] =
+    morphologyCodings(version)
+      .filter(_.display.contains(text))
+
+}
+
+/*
+object ICDO3CatalogsImpl extends ICDO3Catalogs
+{
+
   override def availableVersions: List[Year] =
     List(Year.of(2014))
 
@@ -77,56 +185,9 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
       .toMap
     }
 
-/*
-  private val topographyCatalogs: Map[ICDO3.Version.Value,Iterable[ICDO3TCoding]] =
-    this.synchronized {
-    ICDO3.Version.values
-      .toList
-      .map {
-        version =>
-
-          val inStream =
-            this.getClass
-              .getClassLoader
-              .getResourceAsStream(s"icdo3${version}.xml")
-            
-          val codings =
-            ClaMLICDO3TParser.parse(inStream)
-              .map(cd => ICDO3TCoding(cd._1,Some(cd._2),version))
-
-          inStream.close
- 
-         (version,codings)
-      }
-      .toMap
-    }
-
-  private val morphologyCatalogs: Map[ICDO3.Version.Value,Iterable[ICDO3MCoding]] =
-    this.synchronized {
-    ICDO3.Version.values
-      .toList
-      .map {
-        version =>
-          val inStream =
-            this.getClass
-              .getClassLoader
-              .getResourceAsStream(s"icdo3${version}.xml")
-
-          val codings =
-            ClaMLICDO3MParser.parse(inStream)
-              .map(cd => ICDO3MCoding(cd._1,Some(cd._2),version))
-
-          inStream.close
-
-          (version,codings)
-      }
-      .toMap
-    }
-*/
 
   override def topographyCodings(
     version: Year
-//    version: ICDO3.Version.Value = ICDO3.Version.current
   ): Iterable[ICDO3TCoding] = 
     topographyCatalogs(version)
 
@@ -134,7 +195,6 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
   override def topographyMatches(
     text: String,
     version: Year
-//    version: ICDO3.Version.Value = ICDO3.Version.current,
   ): Iterable[ICDO3TCoding] =
     topographyCodings(version).filter(_.display.exists(_.contains(text)))
 
@@ -142,7 +202,6 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
 
   override def morphologyCodings(
     version: Year
-//    version: ICDO3.Version.Value = ICDO3.Version.current
   ): Iterable[ICDO3MCoding] =
     morphologyCatalogs(version)
 
@@ -150,50 +209,9 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
   override def morphologyMatches(
     text: String,
     version: Year
-//    version: ICDO3.Version.Value = ICDO3.Version.current
   ): Iterable[ICDO3MCoding] =
     morphologyCodings(version)
       .filter(_.display.exists(_.contains(text)))
 
-
-
-/*
-  def topographyCodings(
-    version: ICDO3.Version.Value
-  )(
-    implicit ec: ExecutionContext
-  ): Future[Iterable[ICDO3TCoding]] =
-    Future { topographyCatalogs(version) }
-
-  def topographyMatches(
-    version: ICDO3.Version.Value,
-    text: String
-  )(
-    implicit ec: ExecutionContext
-  ): Future[Iterable[ICDO3TCoding]] =
-    topographyCodings(version)
-      .map(
-        _.filter(_.display.exists(_.contains(text)))
-      )
-
-
-  def morphologyCodings(
-    version: ICDO3.Version.Value
-  )(
-    implicit ec: ExecutionContext
-  ): Future[Iterable[ICDO3MCoding]] =
-    Future { morphologyCatalogs(version) }
-
-  def morphologyMatches(
-    version: ICDO3.Version.Value,
-    text: String
-  )(
-    implicit ec: ExecutionContext
-  ): Future[Iterable[ICDO3MCoding]] =
-    morphologyCodings(version)
-      .map(
-        _.filter(_.display.exists(_.contains(text)))
-      )
-*/
-
 }
+*/
