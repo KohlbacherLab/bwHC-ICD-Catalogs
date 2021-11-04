@@ -33,10 +33,10 @@ object ICD10GMCatalogsImpl extends ICD10GMCatalogs
 {
 
   override def availableVersions: List[Year] =
-    List(2019,2020,2021).map(Year.of)
+    List(2019,2020,2021,2022).map(Year.of)
 
 
-  private lazy val catalogs: Map[Year,Iterable[ICD10GMCoding]] =
+  private val catalogs: Map[Year,Iterable[ICD10GMCoding]] =
     this.synchronized {
     availableVersions
       .map {
@@ -48,7 +48,10 @@ object ICD10GMCatalogsImpl extends ICD10GMCatalogs
 
           val codings =
             ClaMLICD10GMParser.parse(inStream)
-              .map(cd => ICD10GMCoding(cd._1,Some(cd._2),version))
+              .map {
+                case (code,label) => ICD10GMCoding(code,label,version)
+              }
+//              .map(cd => ICD10GMCoding(cd._1,cd._2,version))
 
           inStream.close
 
@@ -83,35 +86,15 @@ object ICD10GMCatalogsImpl extends ICD10GMCatalogs
 
   override def codings(
     version: Year
-//    version: ICD10GM.Version.Value
   ): Iterable[ICD10GMCoding] =
     catalogs(version)
+
 
   override def matches(
     text: String,
     version: Year
-//    version: ICD10GM.Version.Value
   ): Iterable[ICD10GMCoding] =
-    codings(version).filter(_.display.exists(_.contains(text)))
+    codings(version).filter(_.display.contains(text))
 
-/*
-  def codings(
-    version: ICD10GM.Version.Value
-  )(
-    implicit ec: ExecutionContext
-  ): Future[Iterable[ICD10GMCoding]] = {
-    Future { catalogs(version) }
-  }  
-
-
-  def matches(
-    version: ICD10GM.Version.Value,
-    text: String
-  )(
-    implicit ec: ExecutionContext
-  ): Future[Iterable[ICD10GMCoding]] =
-    codings(version)
-      .map(_.filter(_.display.exists(_.contains(text))))
-*/
 
 }

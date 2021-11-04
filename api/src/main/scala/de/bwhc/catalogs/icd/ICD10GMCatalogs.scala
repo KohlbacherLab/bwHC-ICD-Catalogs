@@ -22,61 +22,29 @@ trait ICD10GMCatalogsProvider
 
 trait ICD10GMCatalogs
 {
+  self =>
 
   def availableVersions: List[Year]
 
+  def currentVersion: Year =
+    self.availableVersions.max
+
   def codings(
-    version: Year = Year.now
-//    version: ICD10GM.Version.Value = ICD10GM.Version.current
+    version: Year = self.currentVersion
   ): Iterable[ICD10GMCoding]
 
 
-  def code(
+  def coding(
     code: ICD10GM.Code,
-    version: Year = Year.now
-//    version: ICD10GM.Version.Value = ICD10GM.Version.current
+    version: Year = self.currentVersion
   ): Option[ICD10GMCoding] =
-    codings(version).find(_.code == code)
+    self.codings(version).find(_.code == code)
 
 
   def matches(
     text: String,
-    version: Year = Year.now
-//    version: ICD10GM.Version.Value = ICD10GM.Version.current
+    version: Year = self.currentVersion
   ): Iterable[ICD10GMCoding]
-
-
-/*
-  def codings(
-    version: ICD10GM.Version.Value
-  )(
-    implicit ec: ExecutionContext
-  ): Future[Iterable[ICD10GMCoding]]
-
-  def codings(
-    implicit ec: ExecutionContext
-  ): Future[Iterable[ICD10GMCoding]] =
-    codings(ICD10GM.Version.current)
-
-
-  def matches(
-    version: ICD10GM.Version.Value,
-    text: String
-  )(
-    implicit ec: ExecutionContext
-  ): Future[Iterable[ICD10GMCoding]]
-
-
-  def matches(
-    text: String
-  )(
-    implicit ec: ExecutionContext
-  ): Future[Iterable[ICD10GMCoding]] =
-    matches(
-      ICD10GM.Version.current,
-      text
-    )
-*/
 
 }
 
