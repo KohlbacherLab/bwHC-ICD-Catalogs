@@ -42,7 +42,6 @@ lazy val api = project
     name := "icd-catalogs-api",
     settings,
     libraryDependencies ++= Seq(
-//      dependencies.cats_core,
       dependencies.play_json
     ),
     crossScalaVersions := supportedScalaVersions
@@ -64,14 +63,14 @@ lazy val tests = project
     name := "tests",
     settings,
     libraryDependencies ++= Seq(
-      dependencies.scalatest % "test"
+      dependencies.scalatest % Test
     ),
     crossScalaVersions := supportedScalaVersions,
     publish / skip := true
   )
   .dependsOn(
     api,
-    impl % "test"
+    impl % Test
   )
 
 
@@ -82,17 +81,15 @@ lazy val tests = project
 
 lazy val dependencies =
   new {
-    val scalatest  = "org.scalatest"          %% "scalatest"        % "3.0.8"
-    val slf4j      = "org.slf4j"              %  "slf4j-api"        % "1.7.26"
-    val logback    = "ch.qos.logback"         %  "logback-classic"  % "1.0.13"
-//    val cats_core  = "org.typelevel"          %% "cats-core"        % "2.1.1"
+    val scalatest  = "org.scalatest"          %% "scalatest"        % "3.0.8" % Test
+    val slf4j      = "org.slf4j"              %  "slf4j-api"        % "1.7.32"
     val play_json  = "com.typesafe.play"      %% "play-json"        % "2.8.1"
     val scala_xml  = "org.scala-lang.modules" %% "scala-xml"        % "2.0.0"
   }
 
 lazy val commonDependencies = Seq(
   dependencies.slf4j,
-  dependencies.scalatest % "test",
+  dependencies.scalatest,
 )
 
 
