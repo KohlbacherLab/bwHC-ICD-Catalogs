@@ -29,7 +29,9 @@ case class ICDO3TCoding
 (
   code: ICDO3.TopographyCode,
   display: String,
-  version: String
+  version: String,
+  superClass: Option[ICDO3.TopographyCode],
+  subClasses: Set[ICDO3.TopographyCode]
 )
 
 object ICDO3TCoding
@@ -43,7 +45,9 @@ case class ICDO3MCoding
 (
   code: ICDO3.MorphologyCode,
   display: String,
-  version: String
+  version: String,
+  superClass: Option[ICDO3.MorphologyCode],
+  subClasses: Set[ICDO3.MorphologyCode]
 )
 
 object ICDO3MCoding

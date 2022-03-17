@@ -63,7 +63,7 @@ lazy val tests = project
     name := "tests",
     settings,
     libraryDependencies ++= Seq(
-      dependencies.scalatest % Test
+      dependencies.scalatest
     ),
     crossScalaVersions := supportedScalaVersions,
     publish / skip := true

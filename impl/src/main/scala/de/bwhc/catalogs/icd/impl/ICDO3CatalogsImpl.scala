@@ -28,16 +28,6 @@ class ICDO3CatalogsProviderImpl extends ICDO3CatalogsProvider
 object ICDO3CatalogsImpl extends ICDO3Catalogs
 {
 
-/*
-  private val versionsByYear =
-    List(
-      "Erste Revision"  -> 2014,
-      "Zweite Revision" -> 2019
-    )
-*/
-
-//  override val availableVersions: List[String] =
-//    versionsByYear.unzip._1
 
   override val availableVersions: List[(String,Year)] =
     List(
@@ -47,7 +37,6 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
 
 
   override def currentVersion: String =
-//    availableVersions.last
     availableVersions.last._1
 
 
@@ -55,7 +44,6 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
     this.synchronized {
       (
         for {
-//          (version,year) <- versionsByYear
           (version,year) <- availableVersions
         } yield {
         
@@ -66,7 +54,9 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
               
             val codings =
               ClaMLICDO3TParser.parse(inStream)
-                .map { case (code,display) => ICDO3TCoding(code,display,version) }
+                .map {
+                  case (code,display,superClass,subClasses) => ICDO3TCoding(code,display,version,superClass,subClasses)
+                }
         
             inStream.close
         
@@ -81,7 +71,6 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
     this.synchronized {
       (
         for {
-//          (version,year) <- versionsByYear
           (version,year) <- availableVersions
         } yield {
         
@@ -92,7 +81,7 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
         
           val codings =
             ClaMLICDO3MParser.parse(inStream)
-              .map { case (code,display) => ICDO3MCoding(code,display,version) }
+              .map { case (code,display,superClass,subClasses) => ICDO3MCoding(code,display,version,superClass,subClasses) }
         
           inStream.close
         

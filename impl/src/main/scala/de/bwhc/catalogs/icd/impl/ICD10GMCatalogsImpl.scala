@@ -49,9 +49,8 @@ object ICD10GMCatalogsImpl extends ICD10GMCatalogs
           val codings =
             ClaMLICD10GMParser.parse(inStream)
               .map {
-                case (code,label) => ICD10GMCoding(code,label,version)
+                case (code,label,superClass,subClasses) => ICD10GMCoding(code,label,version,superClass,subClasses)
               }
-//              .map(cd => ICD10GMCoding(cd._1,cd._2,version))
 
           inStream.close
 
@@ -60,29 +59,6 @@ object ICD10GMCatalogsImpl extends ICD10GMCatalogs
       .toMap
     }
 
-/*
-  private lazy val catalogs: Map[ICD10GM.Version.Value,Iterable[ICD10GMCoding]] =
-    this.synchronized {
-    ICD10GM.Version.values
-      .toList
-      .map {
-        version =>
-          val inStream =
-            this.getClass
-              .getClassLoader
-              .getResourceAsStream(s"icd10gm$version.xml")
-
-          val codings =
-            ClaMLICD10GMParser.parse(inStream)
-              .map(cd => ICD10GMCoding(cd._1,Some(cd._2),version))
-
-          inStream.close
-
-          (version,codings)
-      }
-      .toMap
-    }
-*/
 
   override def codings(
     version: Year
