@@ -21,7 +21,9 @@ case class ICD10GMCoding
 (
   code: ICD10GM.Code,
   display: String,
-  version: Year
+  version: Year,
+  superClass: Option[ICD10GM.Code],
+  subClasses: Set[ICD10GM.Code]
 )
 
 object ICD10GMCoding
