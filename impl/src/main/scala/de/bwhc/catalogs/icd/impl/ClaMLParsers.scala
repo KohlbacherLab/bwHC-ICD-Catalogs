@@ -75,12 +75,10 @@ object ClaMLICDO3TParser extends ClaMLParser[ICDO3.TopographyCode]
         .map { cl =>
           val code   = ICDO3.TopographyCode(cl \@ "code")
 
-//          val label  = (cl \ "Rubric").find(_ \@ "kind" == "preferred").get \ "Label" text
-
           val labelNode =
-            (cl \ "Rubric").find(_ \@ "kind" == "preferred").get \ "Label"
+            ((cl \ "Rubric").find(_ \@ "kind" == "preferred").get \ "Label")(0)
 
-          val labelText = labelNode(0).descendant(0).toString
+          val labelText = labelNode.descendant(0).toString
 
           val ref = labelNode \ "Reference"
 
@@ -121,12 +119,10 @@ object ClaMLICDO3MParser extends ClaMLParser[ICDO3.MorphologyCode]
           // because ClaML ICD-O-3-M code have format xxxx:x but "official" display format is xxxx/x
           val code   = ICDO3.MorphologyCode((cl \@ "code").replace(":","/"))
 
-//          val label  = (cl \ "Rubric").find(_ \@ "kind" == "preferred").get \ "Label" text
-
           val labelNode =
-            (cl \ "Rubric").find(_ \@ "kind" == "preferred").get \ "Label"
+            ((cl \ "Rubric").find(_ \@ "kind" == "preferred").get \ "Label")(0)
 
-          val labelText = labelNode(0).descendant(0).toString
+          val labelText = labelNode.descendant(0).toString
 
           val ref = labelNode \ "Reference"
 
