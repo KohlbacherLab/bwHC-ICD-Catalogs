@@ -36,8 +36,6 @@ case class ICDO3TCoding
 
 object ICDO3TCoding
 {
-  import Formats._
-
   implicit val formatICDO3TCoding = Json.format[ICDO3TCoding]
 }
 
@@ -52,8 +50,6 @@ case class ICDO3MCoding
 
 object ICDO3MCoding
 {
-  import Formats._
-
   implicit val formatICDO3MCoding = Json.format[ICDO3MCoding]
 }
 

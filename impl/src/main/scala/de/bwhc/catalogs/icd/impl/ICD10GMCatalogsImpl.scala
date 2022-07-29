@@ -7,7 +7,6 @@ import scala.concurrent.{
   Future
 }
 
-import java.time.Year
 
 import de.bwhc.catalogs.icd.{
   ICD10GM,
@@ -32,11 +31,20 @@ class ICD10GMCatalogsProviderImpl extends ICD10GMCatalogsProvider
 object ICD10GMCatalogsImpl extends ICD10GMCatalogs
 {
 
-  override def availableVersions: List[Year] =
+  import java.time.Year
+
+  private val years =
     List(2019,2020,2021,2022).map(Year.of)
 
 
-  private val catalogs: Map[Year,Iterable[ICD10GMCoding]] =
+  override val availableVersions: List[String] =
+    years.map(_.toString)
+
+  override val latestVersion: String =
+    years.max.toString
+
+
+  private val catalogs: Map[String,Iterable[ICD10GMCoding]] =
     this.synchronized {
     availableVersions
       .map {
@@ -44,7 +52,7 @@ object ICD10GMCatalogsImpl extends ICD10GMCatalogs
           val inStream =
             this.getClass
               .getClassLoader
-              .getResourceAsStream(s"icd10gm${version.toString}.xml")
+              .getResourceAsStream(s"icd10gm${version}.xml")
 
           val codings =
             ClaMLICD10GMParser.parse(inStream)
@@ -61,14 +69,14 @@ object ICD10GMCatalogsImpl extends ICD10GMCatalogs
 
 
   override def codings(
-    version: Year
+    version: String
   ): Iterable[ICD10GMCoding] =
     catalogs(version)
 
 
   override def matches(
     text: String,
-    version: Year
+    version: String
   ): Iterable[ICD10GMCoding] =
     codings(version).filter(_.display.contains(text))
 
