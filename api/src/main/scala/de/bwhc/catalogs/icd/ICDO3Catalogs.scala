@@ -20,7 +20,6 @@ trait ICDO3Catalogs
 {
   self =>
 
-//  def availableVersions: List[String]
   def availableVersions: List[(String,Year)]
 
   def currentVersion: String
