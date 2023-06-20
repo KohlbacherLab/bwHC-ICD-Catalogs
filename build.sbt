@@ -6,7 +6,7 @@
 
 name                     := "bwhc-icd-catalogs"
 ThisBuild / organization := "de.bwhc"
-ThisBuild / version      := "1.0"
+ThisBuild / version      := "1.1"
 
 lazy val scala212 = "2.12.10"
 lazy val scala213 = "2.13.8"

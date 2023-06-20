@@ -2,7 +2,6 @@ package de.bwhc.catalogs.icd.impl
 
 
 
-//import scala.concurrent.{ExecutionContext,Future}
 import de.bwhc.catalogs.icd.{
   ICDO3,
   ICDO3TCoding,
@@ -92,7 +91,15 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
   override def topographyCodings(
     version: String
   ): Iterable[ICDO3TCoding] = 
-    topographyCatalogs(version).value
+//    topographyCatalogs(version).value
+    topographyCatalogs.get(version)
+      .orElse(
+        availableVersions
+          .find { case (v,y) => y.toString == version }
+          .flatMap(vy => topographyCatalogs.get(vy._1))
+      )
+      .get
+      .value
 
 
   override def topographyMatches(
@@ -105,7 +112,15 @@ object ICDO3CatalogsImpl extends ICDO3Catalogs
   override def morphologyCodings(
     version: String
   ): Iterable[ICDO3MCoding] =
-    morphologyCatalogs(version).value
+//    morphologyCatalogs(version).value
+    morphologyCatalogs.get(version)
+      .orElse(
+        availableVersions
+          .find { case (v,y) => y.toString == version }
+          .flatMap(vy => morphologyCatalogs.get(vy._1))
+      )
+      .get
+      .value
 
 
   override def morphologyMatches(
