@@ -35,7 +35,7 @@ object ICD10GMCatalogsImpl extends ICD10GMCatalogs
 
 
   private val years =
-    for { y <- 2019 to 2023 } yield Year.of(y)
+    for { y <- 2019 to 2024 } yield Year.of(y)
 
 
   override val availableVersions: List[String] =
